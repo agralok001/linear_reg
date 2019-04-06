@@ -1,0 +1,83 @@
+#Import the libraries
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.cross_validation import train_test_split
+from sklearn import datasets, linear_model
+from sklearn import metrics
+import numpy as np
+from sklearn.cross_validation import cross_val_score
+
+
+# read CSV file directly from a URL and save the results
+data = pd.read_csv('http://datasciencemastery.in/wp-content/uploads/2018/07/Advertising.csv', index_col=0)
+
+#Getting the data ready for the model
+#Features the simply the independent variables (or X's) which are used in modelling
+#y is the target variables
+
+# create a Python list of feature names
+feature_cols = ['TV', 'radio', 'newspaper']
+
+# use the list to select a subset of the original DataFrame
+X = data[feature_cols]
+
+# select a Series from the DataFrame
+y = data['sales']
+
+#getting the dataset ready
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10,  random_state=1)
+
+
+#Fitting the Model
+# instantiate
+linreg = LinearRegression()
+# fit the model to the training data (learn the coefficients)
+linreg.fit(X_train, y_train)
+
+
+# make predictions on the testing set
+y_pred = linreg.predict(X_test)
+
+
+#All the predicted Values
+for mp, av in zip(y_pred, y_test):
+  print ('Model Predicted Value ={}, Known Value = {}, difference = {}'.format(round(mp,2),round(av,2),round(abs(mp-av),2)))
+
+
+#Model Performance
+print ('Mean Absolute Error = ', metrics.mean_absolute_error(y_test, y_pred))
+print ('Mean Squared Error = ',metrics.mean_squared_error(y_test, y_pred))
+print ('Root Mean Squared Error = ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+print ('R2 score = ', metrics.r2_score(y_test, y_pred))
+
+#Cross Validation
+lm = linear_model.LinearRegression()
+scores = cross_val_score(lm, X, y, cv=10, scoring='r2')
+
+print("\n",scores)
+print ("The mean of r2 is", scores.mean())
+
+
+scores = cross_val_score(lm, X, y, cv=10, scoring='neg_mean_absolute_error')
+
+print("\n",scores)
+print ("The mean of absolute error is", scores.mean())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
